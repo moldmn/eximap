@@ -19,8 +19,6 @@ defmodule Eximap.Imap.Client do
     opts = [:binary, active: false]
     host = Application.get_env(:eximap, :incoming_mail_server) |> to_charlist
     port = Application.get_env(:eximap, :incoming_port)
-    account = Application.get_env(:eximap, :account)
-    pass = Application.get_env(:eximap, :password)
 
     # todo: Hardcoded SSL connection until I implement the Authentication algorithms to allow login over :gen_tcp
     {:ok, socket} = Socket.connect(true, host, port, opts)
@@ -29,9 +27,6 @@ defmodule Eximap.Imap.Client do
     # todo: parse the server attributes and store them in the state
     imap_receive_raw(socket)
 
-    # login using the account name and password
-    req = Request.login(account, pass) |> Request.add_tag("EX_LGN")
-    imap_send(socket, req)
     {:ok, %{state | socket: socket}}
   end
 
