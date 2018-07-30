@@ -53,7 +53,7 @@ defmodule Eximap.Imap.Client do
   end
 
   def terminate(reason, _status) do
-    IO.puts "Asked to stop because #{inspect reason}"
+    #IO.puts "Asked to stop because #{inspect reason}"
     :ok
   end
 
