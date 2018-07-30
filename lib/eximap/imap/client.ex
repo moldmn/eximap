@@ -15,6 +15,10 @@ defmodule Eximap.Imap.Client do
     GenServer.start_link(__MODULE__, @initial_state)
   end
 
+  def stop(pid) do
+    GenServer.call(pid, :stop)
+  end
+
   def init(state) do
     opts = [:binary, active: false]
     host = Application.get_env(:eximap, :incoming_mail_server) |> to_charlist
@@ -34,6 +38,10 @@ defmodule Eximap.Imap.Client do
     GenServer.call(pid, {:command, req})
   end
 
+  def handle_call(:stop, _from, status) do
+    {:stop, :normal, status}
+  end
+
   def handle_call({:command, %Request{} = req}, _from, %{socket: socket, tag_number: tag_number} = state) do
     resp = imap_send(socket, %Request{req | tag: "EX#{tag_number}"})
     {:reply, resp, %{state | tag_number: tag_number + 1}}
@@ -42,6 +50,11 @@ defmodule Eximap.Imap.Client do
   def handle_info(resp, state) do
     IO.inspect resp
     {:noreply, state}
+  end
+
+  def terminate(reason, _status) do
+    IO.puts "Asked to stop because #{inspect reason}"
+    :ok
   end
 
   #
