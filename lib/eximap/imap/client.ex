@@ -16,7 +16,7 @@ defmodule Eximap.Imap.Client do
   end
 
   def stop(pid) do
-    GenServer.call(pid, :stop)
+    GenServer.cast(pid, :stop)
   end
 
   def init(state) do
@@ -38,7 +38,7 @@ defmodule Eximap.Imap.Client do
     GenServer.call(pid, {:command, req})
   end
 
-  def handle_call(:stop, _from, status) do
+  def handle_cast(:stop, _from, status) do
     {:stop, :normal, status}
   end
 
